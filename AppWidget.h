@@ -1,0 +1,10 @@
+#ifndef FIRESIMULATION_APPWIDGET_H
+#define FIRESIMULATION_APPWIDGET_H
+
+
+class AppWidget {
+
+};
+
+
+#endif //FIRESIMULATION_APPWIDGET_H

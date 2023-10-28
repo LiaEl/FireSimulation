@@ -12,27 +12,22 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Widgets LinguistTools REQUIRED)
+find_package(OpenCV REQUIRED)
 
 set(TS_FILES FireSimulation_en_FI.ts)
 
-if(ANDROID)
-  add_library(FireSimulation SHARED
-    main.cpp
-    mainwindow.cpp
-    mainwindow.h
-    mainwindow.ui
-    ${TS_FILES}
-  )
-else()
-  add_executable(FireSimulation
-    main.cpp
-    mainwindow.cpp
-    mainwindow.h
-    mainwindow.ui
-    ${TS_FILES}
-  )
-endif()
+add_executable(FireSimulation
+        main.cpp
+        mainwindow.cpp
+        mainwindow.h
+        mainwindow.ui
+        ${TS_FILES}
+        FireSimulation.cpp
+        FireSimulation.h
+        AppWidget.cpp
+        AppWidget.h
+)
 
-target_link_libraries(FireSimulation PRIVATE Qt5::Widgets)
+target_link_libraries(FireSimulation PRIVATE Qt5::Widgets ${OpenCV_LIBS})
 
 qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
