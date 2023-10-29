@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "firewidget.h"
+#include "AppWidget.h"
 
 #include <QMainWindow>
 #include <QPushButton>
@@ -21,5 +21,27 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    AppWidget *appWidget;
+
+    QPushButton* playPauseButton;
+
+    QPushButton* DecreaseWindButton;
+    QPushButton* IncreaseWindButton;
+
+    QPushButton* DecreaseIntervalButton;
+    QPushButton* IncreaseIntervalButton;
+
+    QPushButton* DecreaseIntensityButton;
+    QPushButton* IncreaseIntensityButton;
+
+    QLabel *WindLabel;
+    QLabel *WindSpeedLabel;
+    QLabel *IntervalLabel;
+    QLabel *IntensityLabel;
+    QLabel *UpdateIntervalLabel;
+    QLabel *UpdateIntensityLabel;
+
+public slots:
+    void onStatusUpdated();
 };
 #endif // MAINWINDOW_H
