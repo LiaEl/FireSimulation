@@ -1,4 +1,3 @@
-//#include <opencv2/opencv.hpp>
 #include "FireSimulation.h"
 #include <string.h>
 #include <random>
@@ -28,8 +27,8 @@ void FireSimulation::setIdx(int i, int j, uchar value) {
 }
 
 void FireSimulation::setSize(int w, int h) {
-    this->width = w;
-    this->height = h;
+    width = w;
+    height = h;
 
     if (w % FIRE_ALIGN)
         aligned_w = w + FIRE_ALIGN - (w % FIRE_ALIGN);
@@ -45,45 +44,45 @@ void FireSimulation::setSize(int w, int h) {
 void FireSimulation::resize(int w, int h) {
     delete fire_value;
     setSize(w, h);
-    setFireIntensity(this->cur_fire_intensity);
+    setFireIntensity(cur_fire_intensity);
 }
 
 const uchar* FireSimulation::getAlignedFireVector()
 {
-    return this->fire_value;
+    return fire_value;
 }
 
 int FireSimulation::getWidth() const
 {
-    return this->width;
+    return width;
 }
 
 int FireSimulation::getHeight() const
 {
-    return this->height;
+    return height;
 }
 
 int FireSimulation::getWindSpeed() const
 {
-    return this->wind_speed;
+    return wind_speed;
 }
 
 void FireSimulation::setFireIntensity(int intensity)
 {
-    this->cur_fire_intensity = intensity;
-    for (int i = 0; i < this->width; i++) {
-        this->fire_value[this->getIdx(i, this->height-1)] = this->cur_fire_intensity;
+    cur_fire_intensity = intensity;
+    for (int i = 0; i < width; i++) {
+        fire_value[getIdx(i, height-1)] = cur_fire_intensity;
     }
 }
 
 void FireSimulation::setIntensityMax(int max)
 {
-    this->max_fire_intensity = max;
+    max_fire_intensity = max;
 }
 
 int FireSimulation::getIntensity() const
 {
-    return this->cur_fire_intensity;
+    return cur_fire_intensity;
 }
 
 void FireSimulation::spreadFire()
@@ -92,10 +91,10 @@ void FireSimulation::spreadFire()
     unsigned seed = myRandomDevice();
     std::default_random_engine myRandomEngine(seed);
 
-    for (int j = 0; j < (this->height - 1); j++) {
-        for (int i = 0; i < this->width; i++) {
+    for (int j = 0; j < (height - 1); j++) {
+        for (int i = 0; i < width; i++) {
             auto decay = myRandomEngine() % 3;
-            int new_value = this->fire_value[this->getIdx(i, j+1)] - (decay > 1 ? 1 : 0);
+            int new_value = fire_value[getIdx(i, j+1)] - (decay > 1 ? 1 : 0);
             if (new_value < 0)
                 new_value = 0;
 
@@ -103,50 +102,50 @@ void FireSimulation::spreadFire()
             int new_i = i + (myRandomEngine() % 3 - 1);
 
             // lateral effect (wind)
-            if (this->wind_speed > 0 && myRandomEngine() % 2) {
-                new_i += this->wind_speed;
+            if (wind_speed > 0 && myRandomEngine() % 2) {
+                new_i += wind_speed;
             }
-            else if (this->wind_speed < 0 && myRandomEngine() % 2) {
-                new_i += this->wind_speed;
+            else if (wind_speed < 0 && myRandomEngine() % 2) {
+                new_i += wind_speed;
             }
 
-            this->setIdx(new_i, j, static_cast<uchar>(new_value));
+            setIdx(new_i, j, static_cast<uchar>(new_value));
         }
     }
 }
 
 void FireSimulation::decreaseWindSpeed()
 {
-    if (this->wind_speed > -3)
-        this->wind_speed--;
+    if (wind_speed > -3)
+        wind_speed--;
 }
 
 void FireSimulation::increaseWindSpeed()
 {
-    if (this->wind_speed < 3)
-        this->wind_speed++;
+    if (wind_speed < 3)
+        wind_speed++;
 }
 
 void FireSimulation::increaseFireHeight()
 {
-    if(this->cur_fire_intensity + 10 < this->max_fire_intensity)
+    if(cur_fire_intensity + 10 < max_fire_intensity)
     {
-        this->setFireIntensity(this->cur_fire_intensity + 10);
+        setFireIntensity(cur_fire_intensity + 10);
     }
     else
     {
-        this->setFireIntensity(this->max_fire_intensity);
+        setFireIntensity(max_fire_intensity);
     }
 }
 
 void FireSimulation::decreaseFireHeight()
 {
-    if(this->cur_fire_intensity - 10 > 0)
+    if(cur_fire_intensity - 10 > 0)
     {
-        this->setFireIntensity(this->cur_fire_intensity - 10);
+        setFireIntensity(cur_fire_intensity - 10);
     }
     else
     {
-        this->setFireIntensity(0);
+        setFireIntensity(0);
     }
 }

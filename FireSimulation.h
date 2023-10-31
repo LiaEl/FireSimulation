@@ -2,7 +2,6 @@
 #define FIRESIMULATION_FIRESIMULATION_H
 
 #pragma once
-#include <opencv2/opencv.hpp>
 #include <qglobal.h>
 
 class FireSimulation {

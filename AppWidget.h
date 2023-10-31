@@ -1,6 +1,7 @@
 #ifndef FIRESIMULATION_APPWIDGET_H
 #define FIRESIMULATION_APPWIDGET_H
 
+#pragma once
 #include <QWidget>
 #include <QTimer>
 #include "FireSimulation.h"
@@ -17,8 +18,6 @@ public:
     QString windSpeed();
     QString updateInterval() const;
     QString updateIntensity() const;
-//    QImage matToQImage(cv::Mat &mat, QImage::Format format);
-//    cv::Mat QImageToMat(QImage& img, int format);
 
 signals:
     void statusUpdated();
@@ -45,7 +44,6 @@ private:
     FireSimulation *simulation;
     int update_interval;
     bool simulation_running;
-    bool simulation_created;
 
     QTimer *timer;
 

@@ -1,38 +1,35 @@
 #include "AppWidget.h"
 #include "FireSimulation.h"
+#include "colors.h"
 
 #include <QColor>
 #include <QPainter>
 #include <QResizeEvent>
-#include "nlohmann/json.hpp"
 #include <QDebug>
-
-using json = nlohmann::json;
+#include <fstream>
 
 AppWidget::AppWidget(int w, int h, QWidget *parent) : QWidget(parent) {
-    std::ifstream f("../color.json");
-    json data = json::parse(f);
-    json colors = data["colors"];
 
-    for(json color: colors)
+    for(Color color: Colors)
     {
-        int r = color[0];
-        int g = color[1];
-        int b = color[2];
-        color_table.push_back(QColor(r, g, b).rgb()); // three times to make fire looks higher
-        color_table.push_back(QColor(r, g, b).rgb());
-        color_table.push_back(QColor(r, g, b).rgb());
+        int r = color.r;
+        int g = color.g;
+        int b = color.b;
+        for(int i = 0; i < 3; i++)
+        {
+            color_table.push_back(QColor(r, g, b).rgb());
+        }
     }
 
-    this->simulation = new FireSimulation(w, h);
-    this->simulation->setIntensityMax(color_table.size() - 1);
-    this->simulation->setFireIntensity(color_table.size() - 1);
-    this->simulation_created = true;
-    this->simulation_running = true;
+    simulation = new FireSimulation(w, h);
+    const auto last_color_index = color_table.size() - 1;
+    simulation->setIntensityMax(last_color_index);
+    simulation->setFireIntensity(last_color_index);
+    simulation_running = true;
 
     update_interval = 20;
 
-    timer = new QTimer(this);
+    timer = new QTimer(this); // this
     connect(timer, &QTimer::timeout, this, &AppWidget::onTimerUpdate);
     timer->start(update_interval);
 }
@@ -66,29 +63,9 @@ void AppWidget::paintEvent(QPaintEvent *event) {
                QImage::Format_Indexed8);
     img.setColorTable(color_table);
 
-//    cv::Mat img_to_blur = QImageToMat(img, QImage::Format_Indexed8);
-//    cv::Mat image_blurred_with_5x5_kernel;
-//    GaussianBlur(img_to_blur, image_blurred_with_5x5_kernel, cv::Size(5, 5), 0);
-//    QImage* img_blured = matToQImage(image_blurred_with_5x5_kernel, QImage::Format_Indexed8);
-
     QPainter p(this);
     p.drawImage(QPoint(0, 0), img);
 }
-
-//QImage AppWidget::matToQImage(cv::Mat &mat, QImage::Format format)
-//{
-//    return QImage(mat.data, mat.cols, mat.rows, format);
-////    return QImage(mat.data, mat.cols, mat.rows, mat.step, format);
-//}
-//
-//cv::Mat AppWidget::QImageToMat(QImage& img, int format)
-//{
-////    return cv::Mat(img.height(), img.width(),
-////                   format, img.bits(), img.bytesPerLine());
-//    return cv::Mat(img.height(), img.width(), format,
-//                   const_cast<uchar*>(img.bits()),
-//                   img.bytesPerLine()).clone();
-//}
 
 void AppWidget::onTimerUpdate() {
     simulation->spreadFire();

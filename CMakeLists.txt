@@ -13,7 +13,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Widgets LinguistTools REQUIRED)
 find_package(OpenCV REQUIRED)
-find_package(nlohmann_json 3.7.3 REQUIRED)
 
 #set(TS_FILES FireSimulation_en_FI.ts)
 
@@ -27,9 +26,10 @@ add_executable(FireSimulation
         FireSimulation.h
         AppWidget.cpp
         AppWidget.h
+        colors.h
 )
 
-set(LIBS Qt5::Widgets nlohmann_json::nlohmann_json ${OpenCV_LIBS})
+set(LIBS Qt5::Widgets ${OpenCV_LIBS})
 
 target_link_libraries(FireSimulation PRIVATE ${LIBS})
 
