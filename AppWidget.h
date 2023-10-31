@@ -36,14 +36,12 @@ public slots:
     void onIncreaseIntervalPressed();
     void onDecreaseIntervalPressed();
 
-protected:
-    void resizeEvent(QResizeEvent *event);
-    void paintEvent(QPaintEvent *event);
-
 private:
     FireSimulation *simulation;
     int update_interval;
     bool simulation_running;
+    void resizeEvent(QResizeEvent *event);
+    void paintEvent(QPaintEvent *event);
 
     QTimer *timer;
 

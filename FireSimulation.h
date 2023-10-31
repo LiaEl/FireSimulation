@@ -10,7 +10,7 @@ public:
     FireSimulation(int width, int height);
     ~FireSimulation();
 
-    const uchar* getAlignedFireVector();
+    const uchar* getBrightnessMap();
     int getWidth() const;
     int getHeight() const;
     int getWindSpeed() const;
@@ -24,12 +24,11 @@ public:
     void decreaseWindSpeed();
     void increaseWindSpeed();
     void resize(int width, int height);
-    void setSize(int w, int h);
-
+    void setFireWidth(int w, int h);
 
 private:
     int getIdx(int i, int j) const;
-    void setIdx(int i, int j, uchar value);
+    void setPixelColor(int x, int y, uchar brightness_value);
 
     int width{};
     int height{};
@@ -38,6 +37,6 @@ private:
     int wind_speed{};
     int cur_fire_intensity{};
     int max_fire_intensity{};
-    uchar* fire_value{};
+    uchar* color_map{};
 };
 #endif //FIRESIMULATION_FIRESIMULATION_H

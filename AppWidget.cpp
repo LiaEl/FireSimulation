@@ -6,15 +6,16 @@
 #include <QPainter>
 #include <QResizeEvent>
 #include <QDebug>
-#include <fstream>
 
-AppWidget::AppWidget(int w, int h, QWidget *parent) : QWidget(parent) {
+AppWidget::AppWidget(int w, int h, QWidget *parent) : QWidget(parent)
+{
 
     for(Color color: Colors)
     {
         int r = color.r;
         int g = color.g;
         int b = color.b;
+        // append color three times to make fire look higher
         for(int i = 0; i < 3; i++)
         {
             color_table.push_back(QColor(r, g, b).rgb());
@@ -29,35 +30,41 @@ AppWidget::AppWidget(int w, int h, QWidget *parent) : QWidget(parent) {
 
     update_interval = 20;
 
-    timer = new QTimer(this); // this
+    timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &AppWidget::onTimerUpdate);
     timer->start(update_interval);
 }
 
-AppWidget::~AppWidget() {
+AppWidget::~AppWidget()
+{
     delete simulation;
 }
 
-QString AppWidget::playPauseString() const {
+QString AppWidget::playPauseString() const
+{
     return simulation_running ? QString("Stop") : QString("Start");
 }
 
-QString AppWidget::windSpeed() {
+QString AppWidget::windSpeed()
+{
     return QString("%1").arg(simulation->getWindSpeed());
 }
 
-QString AppWidget::updateInterval() const {
+QString AppWidget::updateInterval() const
+{
     return QString("%1").arg(update_interval);
 }
 
-QString AppWidget::updateIntensity() const {
+QString AppWidget::updateIntensity() const
+{
     return QString("%1").arg(simulation->getIntensity());
 }
 
-void AppWidget::paintEvent(QPaintEvent *event) {
+void AppWidget::paintEvent(QPaintEvent *event)
+{
     QWidget::paintEvent(event);
 
-    QImage img(simulation->getAlignedFireVector(),
+    QImage img(simulation->getBrightnessMap(),
                simulation->getWidth(),
                simulation->getHeight(),
                QImage::Format_Indexed8);
@@ -67,16 +74,20 @@ void AppWidget::paintEvent(QPaintEvent *event) {
     p.drawImage(QPoint(0, 0), img);
 }
 
-void AppWidget::onTimerUpdate() {
+void AppWidget::onTimerUpdate()
+{
     simulation->spreadFire();
     update();
 }
 
-void AppWidget::onStartStopPressed() {
-    if (simulation_running) {
+void AppWidget::onStartStopPressed()
+{
+    if (simulation_running)
+    {
         timer->stop();
         simulation_running = false;
-    } else {
+    } else
+    {
         timer->start(update_interval);
         simulation_running = true;
     }
@@ -84,43 +95,52 @@ void AppWidget::onStartStopPressed() {
     update();
 }
 
-void AppWidget::onIncreaseWindPressed() {
+void AppWidget::onIncreaseWindPressed()
+{
     simulation->increaseWindSpeed();
     emit statusUpdated();
 }
 
-void AppWidget::onDecreaseWindPressed() {
+void AppWidget::onDecreaseWindPressed()
+{
     simulation->decreaseWindSpeed();
     emit statusUpdated();
 }
 
-void AppWidget::onDecreaseIntensityPressed() {
+void AppWidget::onDecreaseIntensityPressed()
+{
     simulation->decreaseFireHeight();
     emit statusUpdated();
 }
 
-void AppWidget::onIncreaseIntensityPressed() {
+void AppWidget::onIncreaseIntensityPressed()
+{
     simulation->increaseFireHeight();
     emit statusUpdated();
 }
 
-void AppWidget::onIncreaseIntervalPressed() {
-    if (update_interval < 100) {
+void AppWidget::onIncreaseIntervalPressed()
+{
+    if (update_interval < 100)
+    {
         update_interval += 5;
         timer->setInterval(update_interval);
     }
     emit statusUpdated();
 }
 
-void AppWidget::onDecreaseIntervalPressed() {
-    if (update_interval > 5) {
+void AppWidget::onDecreaseIntervalPressed()
+{
+    if (update_interval > 5)
+    {
         update_interval -= 5;
         timer->setInterval(update_interval);
     }
     emit statusUpdated();
 }
 
-void AppWidget::resizeEvent(QResizeEvent *event) {
+void AppWidget::resizeEvent(QResizeEvent *event)
+{
     int w = event->size().width();
     int h = event->size().height();
     simulation->resize(w, h);

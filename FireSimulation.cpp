@@ -4,29 +4,35 @@
 
 #define FIRE_ALIGN 4
 
-FireSimulation::FireSimulation(int w, int h) {
-    setSize(w, h);
+FireSimulation::FireSimulation(int w, int h)
+{
+    setFireWidth(w, h);
 }
 
-FireSimulation::~FireSimulation(){
-    delete[] fire_value;
+FireSimulation::~FireSimulation()
+{
+    delete[] color_map;
 }
 
-void FireSimulation::resetFire() {
+void FireSimulation::resetFire()
+{
     size_t len = static_cast<size_t>(vector_len) * sizeof(uchar);
-    memset(fire_value, 0, len);
+    memset(color_map, 0, len);
 }
 
-int FireSimulation::getIdx(int i, int j) const {
-    return i + aligned_w * j;
+int FireSimulation::getIdx(int x, int y) const
+{
+    return x + aligned_w * y;
 }
 
-void FireSimulation::setIdx(int i, int j, uchar value) {
-    if (i >= 0 && i < width && j >= 0 && j < height)
-        fire_value[getIdx(i, j)] = value;
+void FireSimulation::setPixelColor(int x, int y, uchar color)
+{
+    if (x >= 0 && x < width && y >= 0 && y < height)
+        color_map[getIdx(x, y)] = color;
 }
 
-void FireSimulation::setSize(int w, int h) {
+void FireSimulation::setFireWidth(int w, int h)
+{
     width = w;
     height = h;
 
@@ -36,20 +42,21 @@ void FireSimulation::setSize(int w, int h) {
         aligned_w = w;
 
     vector_len = aligned_w * h;
-    fire_value = new uchar[vector_len];
+    color_map = new uchar[vector_len];
     wind_speed = 0;
 
     resetFire();
 }
-void FireSimulation::resize(int w, int h) {
-    delete fire_value;
-    setSize(w, h);
+void FireSimulation::resize(int w, int h)
+{
+    delete color_map;
+    setFireWidth(w, h);
     setFireIntensity(cur_fire_intensity);
 }
 
-const uchar* FireSimulation::getAlignedFireVector()
+const uchar* FireSimulation::getBrightnessMap()
 {
-    return fire_value;
+    return color_map;
 }
 
 int FireSimulation::getWidth() const
@@ -69,9 +76,11 @@ int FireSimulation::getWindSpeed() const
 
 void FireSimulation::setFireIntensity(int intensity)
 {
+    // in fact, we don't have "intensity" value, but we set the color with what fire start propagating
     cur_fire_intensity = intensity;
-    for (int i = 0; i < width; i++) {
-        fire_value[getIdx(i, height-1)] = cur_fire_intensity;
+    for (int i = 0; i < width; i++)
+    {
+        color_map[getIdx(i, height - 1)] = cur_fire_intensity;
     }
 }
 
@@ -91,25 +100,23 @@ void FireSimulation::spreadFire()
     unsigned seed = myRandomDevice();
     std::default_random_engine myRandomEngine(seed);
 
-    for (int j = 0; j < (height - 1); j++) {
-        for (int i = 0; i < width; i++) {
+    for (int y = 0; y < (height - 1); y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
             auto decay = myRandomEngine() % 3;
-            int new_value = fire_value[getIdx(i, j+1)] - (decay > 1 ? 1 : 0);
+            int new_value = color_map[getIdx(x, y + 1)] - (decay > 1 ? 1 : 0);
             if (new_value < 0)
                 new_value = 0;
 
-            // change pixel direction
-            int new_i = i + (myRandomEngine() % 3 - 1);
+            int new_x = x + (myRandomEngine() % 3 - 1);
 
-            // lateral effect (wind)
-            if (wind_speed > 0 && myRandomEngine() % 2) {
-                new_i += wind_speed;
-            }
-            else if (wind_speed < 0 && myRandomEngine() % 2) {
-                new_i += wind_speed;
+            if (myRandomEngine() % 3)
+            {
+                new_x += wind_speed;
             }
 
-            setIdx(new_i, j, static_cast<uchar>(new_value));
+            setPixelColor(new_x, y, static_cast<uchar>(new_value));
         }
     }
 }
