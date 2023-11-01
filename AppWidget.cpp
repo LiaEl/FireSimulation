@@ -1,6 +1,7 @@
 #include "AppWidget.h"
 #include "FireSimulation.h"
 #include "colors.h"
+#include "cvmatandqimage.h"
 
 #include <QColor>
 #include <QPainter>
@@ -68,10 +69,18 @@ void AppWidget::paintEvent(QPaintEvent *event)
                simulation->getWidth(),
                simulation->getHeight(),
                QImage::Format_Indexed8);
-    img.setColorTable(color_table);
+
+    auto order = QtOcv::MatColorOrder::MCO_BGR;
+    auto mat_img = QtOcv::image2Mat_shared(img, &order);
+    // first filter I remembered
+    cv::Mat image_blurred_with_5x5_kernel;
+    cv::GaussianBlur(mat_img, image_blurred_with_5x5_kernel, cv::Size(5, 5), 0);
+    auto qt_image = QtOcv::mat2Image_shared(image_blurred_with_5x5_kernel, QImage::Format_Indexed8);
+
+    qt_image.setColorTable(color_table);
 
     QPainter p(this);
-    p.drawImage(QPoint(0, 0), img);
+    p.drawImage(QPoint(0, 0), qt_image);
 }
 
 void AppWidget::onTimerUpdate()

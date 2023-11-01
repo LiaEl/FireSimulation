@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QTimer>
 #include "FireSimulation.h"
+#include <opencv2/opencv.hpp>
 
 class AppWidget : public QWidget {
 
